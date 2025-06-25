@@ -1,2 +1,0 @@
-# MIZUMI_Ecommerce
-
