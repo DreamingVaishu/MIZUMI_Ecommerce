@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
       <section className="relative h-screen overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.pexels.com/photos/6311155/pexels-photo-6311155.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" 
+            src="https://i.pinimg.com/736x/bf/f6/eb/bff6ebbe46459fc15b7d8222d103346f.jpg" 
             alt="Hero background" 
             className="h-full w-full object-cover object-center"
           />
