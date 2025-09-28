@@ -17,6 +17,8 @@ Enjoy smooth browsing, cart management, and a delightful checkout experience!
 🎉 Experience Mizumi eCommerce here:  
 [![Visit Site](https://img.shields.io/badge/Visit%20Mizumi%20eCommerce-000?style=for-the-badge&logo=vercel&logoColor=white)](https://mizumi-ecommerce.vercel.app/)
 
+---
+
 
 ## 🛠️ Tech Stack
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
