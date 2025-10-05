@@ -19,10 +19,6 @@ Enjoy smooth browsing, cart management, and a delightful checkout experience!
 
 ---
 
-## 📸 Preview  
-![Mizumi Preview](https://via.placeholder.com/1000x500.png?text=Mizumi+eCommerce+Preview)
-
----
 
 ## 🛠️ Tech Stack
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
