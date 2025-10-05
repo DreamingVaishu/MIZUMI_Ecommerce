@@ -20,6 +20,11 @@ export const categories: Category[] = [
     id: 'accessories',
     name: 'Accessories',
     image: 'https://images.pexels.com/photos/5709352/pexels-photo-5709352.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
+  },
+  {
+    id: 'Shoes',
+    name: 'Accessories',
+    image: 'https://images.pexels.com/photos/5709352/pexels-photo-5709352.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
   }
 ];
 

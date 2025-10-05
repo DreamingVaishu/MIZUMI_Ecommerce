@@ -64,7 +64,8 @@ const HomePage: React.FC = () => {
               Modern colathing brand 
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button 
+              <Button
+                className='rounded-xl'
                 variant="secondary" 
                 size="lg"
                 onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
@@ -72,7 +73,7 @@ const HomePage: React.FC = () => {
                 Explore Collection
               </Button>
               <Link to="/about">
-                <Button variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white hover:text-neutral-900">
+                <Button variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white hover:text-neutral-900 rounded-xl">
                   Our Story
                 </Button>
               </Link>
