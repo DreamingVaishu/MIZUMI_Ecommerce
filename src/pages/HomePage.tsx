@@ -5,18 +5,43 @@ import { ArrowRight } from 'lucide-react';
 import Button from '../components/ui/Button';
 import ProductCard from '../components/ui/ProductCard';
 import CategoryCard from '../components/ui/CategoryCard';
-import { 
-  getFeaturedProducts, 
-  getNewArrivals, 
-  getBestSellers,
-  categories
+import {
+  fetchFeaturedProducts,
+  fetchNewArrivals,
+  fetchBestSellers,
+  fetchCategories
 } from '../data/products';
+import { Product, Category } from '../types';
 
 const HomePage: React.FC = () => {
-  const featuredProducts = getFeaturedProducts();
-  const newArrivals = getNewArrivals();
-  const bestSellers = getBestSellers();
-  
+  const [featuredProducts, setFeaturedProducts] = React.useState<Product[]>([]);
+  const [newArrivals, setNewArrivals] = React.useState<Product[]>([]);
+  const [bestSellers, setBestSellers] = React.useState<Product[]>([]);
+  const [categoriesList, setCategoriesList] = React.useState<Category[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [featured, arrivals, sellers, cats] = await Promise.all([
+          fetchFeaturedProducts(),
+          fetchNewArrivals(),
+          fetchBestSellers(),
+          fetchCategories()
+        ]);
+        setFeaturedProducts(featured);
+        setNewArrivals(arrivals);
+        setBestSellers(sellers);
+        setCategoriesList(cats);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -27,7 +52,7 @@ const HomePage: React.FC = () => {
       }
     }
   };
-  
+
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -37,21 +62,29 @@ const HomePage: React.FC = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-800" />
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Hero Section */}
       <section className="relative h-screen overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img 
-            src="https://i.pinimg.com/736x/bf/f6/eb/bff6ebbe46459fc15b7d8222d103346f.jpg" 
-            alt="Hero background" 
+          <img
+            src="https://i.pinimg.com/736x/bf/f6/eb/bff6ebbe46459fc15b7d8222d103346f.jpg"
+            alt="Hero background"
             className="h-full w-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-black bg-opacity-30" />
         </div>
-        
+
         <div className="relative z-10 flex h-full items-center justify-center px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -61,12 +94,12 @@ const HomePage: React.FC = () => {
               MIZUMI
             </h1>
             <p className="mx-auto max-w-xl text-lg sm:text-xl text-white mb-8">
-              Modern colathing brand 
+              Modern colathing brand
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
                 className='rounded-xl'
-                variant="secondary" 
+                variant="secondary"
                 size="lg"
                 onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
               >
@@ -81,11 +114,11 @@ const HomePage: React.FC = () => {
           </motion.div>
         </div>
       </section>
-      
+
       {/* Categories Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-neutral-50">
         <div className="container mx-auto">
-          <motion.div 
+          <motion.div
             className="text-center mb-12"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -97,15 +130,15 @@ const HomePage: React.FC = () => {
               Explore our collection of mindfully crafted clothing and accessories
             </p>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6"
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
           >
-            {categories.map((category) => (
+            {categoriesList.map((category: Category) => (
               <motion.div key={category.id} variants={itemVariants}>
                 <CategoryCard category={category} />
               </motion.div>
@@ -113,12 +146,12 @@ const HomePage: React.FC = () => {
           </motion.div>
         </div>
       </section>
-      
+
       {/* New Arrivals Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto">
           <div className="flex items-center justify-between mb-12">
-            <motion.h2 
+            <motion.h2
               className="text-2xl font-medium text-neutral-900"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -139,8 +172,8 @@ const HomePage: React.FC = () => {
               </Link>
             </motion.div>
           </div>
-          
-          <motion.div 
+
+          <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
             variants={containerVariants}
             initial="hidden"
@@ -155,12 +188,12 @@ const HomePage: React.FC = () => {
           </motion.div>
         </div>
       </section>
-      
+
       {/* Featured Banner */}
       <section className="relative py-24 bg-black">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="mx-auto max-w-3xl text-center">
-            <motion.h2 
+            <motion.h2
               className="text-3xl font-medium text-white mb-6"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -169,7 +202,7 @@ const HomePage: React.FC = () => {
             >
               Crafted with Care For You
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-lg text-indigo-100 mb-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -198,12 +231,12 @@ const HomePage: React.FC = () => {
           </svg>
         </div>
       </section>
-      
+
       {/* Best Sellers Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-neutral-50">
         <div className="container mx-auto">
           <div className="flex items-center justify-between mb-12">
-            <motion.h2 
+            <motion.h2
               className="text-2xl font-medium text-neutral-900"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -224,8 +257,8 @@ const HomePage: React.FC = () => {
               </Link>
             </motion.div>
           </div>
-          
-          <motion.div 
+
+          <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
             variants={containerVariants}
             initial="hidden"
@@ -240,12 +273,12 @@ const HomePage: React.FC = () => {
           </motion.div>
         </div>
       </section>
-      
+
       {/* Newsletter Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto">
           <div className="mx-auto max-w-xl text-center">
-            <motion.h2 
+            <motion.h2
               className="text-2xl font-medium text-neutral-900 mb-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -254,7 +287,7 @@ const HomePage: React.FC = () => {
             >
               Join Our Community
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-neutral-600 mb-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -263,7 +296,7 @@ const HomePage: React.FC = () => {
             >
               Sign up for our newsletter to receive updates on new collections and exclusive offers.
             </motion.p>
-            <motion.form 
+            <motion.form
               className="flex flex-col sm:flex-row gap-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

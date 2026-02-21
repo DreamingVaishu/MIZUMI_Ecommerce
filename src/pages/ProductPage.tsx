@@ -5,7 +5,7 @@ import { ArrowLeft, ShoppingBag, Check } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import { useCart } from '../context/CartContext';
-import { getProductById } from '../data/products';
+import { fetchProductById } from '../data/products';
 import { Product } from '../types';
 
 const ProductPage: React.FC = () => {
@@ -17,31 +17,36 @@ const ProductPage: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [addedToCart, setAddedToCart] = useState(false);
-  
+
   const { addToCart } = useCart();
 
   useEffect(() => {
-    if (productId) {
-      // Simulate loading
-      setIsLoading(true);
-      setTimeout(() => {
-        const fetchedProduct = getProductById(productId);
-        if (fetchedProduct) {
-          setProduct(fetchedProduct);
-          setSelectedImage(fetchedProduct.images[0]);
-          setSelectedSize(fetchedProduct.sizes[0]);
-          setSelectedColor(fetchedProduct.colors[0].name);
+    const loadProductData = async () => {
+      if (productId) {
+        setIsLoading(true);
+        try {
+          const fetchedProduct = await fetchProductById(productId);
+          if (fetchedProduct) {
+            setProduct(fetchedProduct);
+            setSelectedImage(fetchedProduct.images[0]);
+            setSelectedSize(fetchedProduct.sizes[0]);
+            setSelectedColor(fetchedProduct.colors[0].name);
+          }
+        } catch (error) {
+          console.error('Error loading product data:', error);
+        } finally {
+          setIsLoading(false);
         }
-        setIsLoading(false);
-      }, 500);
-    }
+      }
+    };
+    loadProductData();
   }, [productId]);
 
   const handleAddToCart = () => {
     if (product && selectedSize && selectedColor) {
       addToCart(product, quantity, selectedSize, selectedColor);
       setAddedToCart(true);
-      
+
       // Reset after 3 seconds
       setTimeout(() => {
         setAddedToCart(false);
@@ -85,10 +90,10 @@ const ProductPage: React.FC = () => {
         <ArrowLeft className="h-4 w-4 mr-1" />
         Back to {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
       </Link>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Product Images */}
-        <motion.div 
+        <motion.div
           className="space-y-4"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -117,9 +122,9 @@ const ProductPage: React.FC = () => {
             ))}
           </div>
         </motion.div>
-        
+
         {/* Product Details */}
-        <motion.div 
+        <motion.div
           className="flex flex-col"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -129,14 +134,14 @@ const ProductPage: React.FC = () => {
             {product.new && <Badge variant="new">New</Badge>}
             {product.bestSeller && <Badge variant="sale">Best Seller</Badge>}
           </div>
-          
+
           <h1 className="text-2xl font-medium text-neutral-900">{product.name}</h1>
           <p className="text-xl font-medium text-neutral-900 mt-2">${product.price}</p>
-          
+
           <div className="mt-8">
             <p className="text-neutral-600">{product.description}</p>
           </div>
-          
+
           {/* Color Selection */}
           <div className="mt-8">
             <h2 className="text-sm font-medium text-neutral-900 mb-3">Color</h2>
@@ -144,11 +149,10 @@ const ProductPage: React.FC = () => {
               {product.colors.map((color) => (
                 <button
                   key={color.name}
-                  className={`relative h-8 w-8 rounded-full border ${
-                    selectedColor === color.name 
-                      ? 'ring-2 ring-offset-2 ring-indigo-700' 
+                  className={`relative h-8 w-8 rounded-full border ${selectedColor === color.name
+                      ? 'ring-2 ring-offset-2 ring-indigo-700'
                       : 'ring-1 ring-neutral-300'
-                  }`}
+                    }`}
                   style={{ backgroundColor: color.hex }}
                   onClick={() => setSelectedColor(color.name)}
                   aria-label={`Color: ${color.name}`}
@@ -162,7 +166,7 @@ const ProductPage: React.FC = () => {
               ))}
             </div>
           </div>
-          
+
           {/* Size Selection */}
           <div className="mt-8">
             <div className="flex items-center justify-between">
@@ -173,11 +177,10 @@ const ProductPage: React.FC = () => {
               {product.sizes.map((size) => (
                 <button
                   key={size}
-                  className={`flex h-10 items-center justify-center rounded-md border ${
-                    selectedSize === size
+                  className={`flex h-10 items-center justify-center rounded-md border ${selectedSize === size
                       ? 'border-indigo-700 bg-indigo-50 text-indigo-700'
                       : 'border-neutral-300 text-neutral-900 hover:bg-neutral-50'
-                  }`}
+                    }`}
                   onClick={() => setSelectedSize(size)}
                 >
                   {size}
@@ -185,7 +188,7 @@ const ProductPage: React.FC = () => {
               ))}
             </div>
           </div>
-          
+
           {/* Quantity */}
           <div className="mt-8">
             <h2 className="text-sm font-medium text-neutral-900 mb-3">Quantity</h2>
@@ -212,12 +215,12 @@ const ProductPage: React.FC = () => {
               </button>
             </div>
           </div>
-          
+
           {/* Add to Cart Button */}
           <div className="mt-8">
-            <Button 
-              variant="primary" 
-              size="lg" 
+            <Button
+              variant="primary"
+              size="lg"
               fullWidth
               onClick={handleAddToCart}
               disabled={!selectedSize || !selectedColor || addedToCart}
@@ -236,7 +239,7 @@ const ProductPage: React.FC = () => {
               )}
             </Button>
           </div>
-          
+
           {/* Additional Information */}
           <div className="mt-8 pt-8 border-t border-neutral-200">
             <div className="prose prose-sm max-w-none text-neutral-600">

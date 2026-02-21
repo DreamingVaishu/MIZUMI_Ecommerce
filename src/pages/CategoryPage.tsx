@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductCard from '../components/ui/ProductCard';
-import { getProductsByCategory, categories } from '../data/products';
+import { fetchProductsByCategory, fetchCategories } from '../data/products';
 import { Product } from '../types';
 
 const CategoryPage: React.FC = () => {
@@ -12,18 +12,25 @@ const CategoryPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (categoryId) {
-      const categoryName = categories.find(c => c.id === categoryId)?.name || '';
-      setCategory(categoryName);
-      
-      // Simulate loading
-      setIsLoading(true);
-      setTimeout(() => {
-        const filteredProducts = getProductsByCategory(categoryId);
-        setProducts(filteredProducts);
-        setIsLoading(false);
-      }, 500);
-    }
+    const loadCategoryData = async () => {
+      if (categoryId) {
+        setIsLoading(true);
+        try {
+          const [filteredProducts, allCategories] = await Promise.all([
+            fetchProductsByCategory(categoryId),
+            fetchCategories()
+          ]);
+          setProducts(filteredProducts);
+          const categoryName = allCategories.find(c => c.id === categoryId)?.name || categoryId;
+          setCategory(categoryName);
+        } catch (error) {
+          console.error('Error loading category data:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    loadCategoryData();
   }, [categoryId]);
 
   // Animation variants
@@ -36,7 +43,7 @@ const CategoryPage: React.FC = () => {
       }
     }
   };
-  
+
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -55,13 +62,13 @@ const CategoryPage: React.FC = () => {
             Explore our collection of mindfully crafted {category.toLowerCase()}
           </p>
         </div>
-        
+
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-900"></div>
           </div>
         ) : products.length > 0 ? (
-          <motion.div 
+          <motion.div
             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-[1200px] mx-auto overflow-y-auto mb-12"
             variants={containerVariants}
             initial="hidden"
